@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Crisis } from './crisis';
@@ -12,16 +12,18 @@ import { MessageService } from '../message.service';
 })
 export class CrisisService {
 
+  static nextCrisisId = 100;
+  private crisis$: BehaviorSubject<Crisis[]> = new BehaviorSubject<Crisis[]>(CRISES);
+
   constructor(private messageService: MessageService) { }
 
   getCrisis(id: number | string){
     return this.getCrises().pipe(
-      map((crises: Crisis[]) => crises.find(crisis =>  crisis.id === +id))
+      map(crises => crises.find(crisis =>  crisis.id === +id))
     );
   }
   
-  getCrises(): Observable<Crisis[]> {
-    this.messageService.add('CrisisService: fetched crises');
-    return of(CRISES);
+  getCrises() {
+    return this.crisis$;
   }
 }

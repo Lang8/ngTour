@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, OnInit, HostBinding } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Crisis } from '../crisis';
-import { switchMap } from 'rxjs/operators';
-import { CrisisService } from '../crisis.service';
+
+import { DialogService } from '../../dialog.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -11,24 +11,42 @@ import { Observable } from 'rxjs';
   styleUrls: ['./crisis-detail.component.css']
 })
 export class CrisisDetailComponent implements OnInit {
-  crisis$: Observable<Crisis>;
+  crisis: Crisis;
+  editName: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private service: CrisisService
-  ) { }
+    private dialogService: DialogService
+  ) {}
 
   ngOnInit() {
-    this.crisis$ = this.route.paramMap.pipe(
-      switchMap((params: ParamMap)=>
-      this.service.getCrisis(params.get('id')))
-    );
+    this.route.data.subscribe((data: { crisis: Crisis }) => {
+      this.editName = data.crisis.name;
+      this.crisis = data.crisis;
+    })
   }
 
-  gotoCrises(crisis: Crisis){
-    const CrisisId = crisis ? crisis.id : null;
+  cancel(){
+    this.gotoCrises();
+  }
+
+  save(){
+    this.crisis.name = this.editName;
+    this.gotoCrises();
+  }
+
+  gotoCrises(){
+    const CrisisId = this.crisis ? this.crisis.id : null;
     this.router.navigate(['../', {id: CrisisId, foo:'foo'}],{relativeTo: this.route});
+  }
+
+  canDeactivate(): Observable<boolean> | boolean{
+    if(!this.crisis || this.crisis.name === this.editName){
+      return true;
+    }
+
+    return this.dialogService.confirm('Discard changes?');
   }
 
 }

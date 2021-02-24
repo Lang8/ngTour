@@ -1,7 +1,9 @@
 <h1>Angular router</h1>
 <nav>
-  <a routerLink="/crisis-center" class="button" routerLinkActive="activebutton">Crisis Center</a>
-  <a routerLink="/heroes" class="button" routerLinkActive="activebutton">Heroes</a>
+  <a routerLink="/crisis-center" routerLinkActive="activebutton">Crisis Center</a>
+  <a routerLink="/heroes" routerLinkActive="activebutton">Heroes</a>
+  <a routerLink="/admin" routerLinkActive="activebutton">Admin</a>
+  <a routerLink="/login" routerLinkActive="activebutton">Login</a>
   <a [routerLink]="[{ outlets: { popup: ['compose'] } }]">Contact</a>
 </nav>
 <div [@routeAnimation]="getAnimationData(routerOutlet)">
